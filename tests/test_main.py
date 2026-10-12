@@ -74,3 +74,13 @@ def test_generate_sales_report():
     assert total_revenue == 510.0
     assert sales_by_product['Keyboard'] == 360.0
     assert sales_by_product['Mouse'] == 150.0
+
+from unittest.mock import patch
+
+from main import load_sales_data
+
+
+def test_load_sales_data_file_not_found():
+   with patch('src.data_loader.pd.read_csv', side_effect=FileNotFoundError):
+        with pytest.raises(FileNotFoundError):
+            load_sales_data()

@@ -16,11 +16,13 @@ This project reads raw sales data, validates and cleans the records, calculates 
 * Calculate total revenue
 * Generate revenue summaries by product
 * Export processed data to a CSV file
+* Run automated tests with pytest
 
 ## Technologies
 
 * Python
 * Pandas
+* pytest
 * Git and GitHub
 
 ## Project Structure
@@ -30,6 +32,14 @@ sales-data-pipeline/
 ├── data/
 │   ├── raw_sales.csv
 │   └── processed_sales.csv
+├── src/
+│   ├── __init__.py
+│   ├── data_loader.py
+│   ├── data_validator.py
+│   ├── data_cleaner.py
+│   └── sales_report.py
+├── tests/
+│   └── test_main.py
 ├── main.py
 ├── requirements.txt
 ├── README.md
@@ -41,7 +51,7 @@ sales-data-pipeline/
 1. Clone the repository:
 
    ```bash
-   git clone YOUR_REPOSITORY_URL
+   git clone https://github.com/Dev-MarcoAntonio/sales-data-pipeline.git
    ```
 
 2. Navigate to the project directory:
@@ -58,8 +68,8 @@ sales-data-pipeline/
 
 4. Activate the virtual environment on Windows:
 
-   ```bash
-   .venv\Scripts\activate
+   ```powershell
+   .venv\Scripts\Activate.ps1
    ```
 
 5. Install the dependencies:
@@ -78,13 +88,21 @@ python main.py
 
 The processed sales data will be saved to `data/processed_sales.csv`.
 
+## Running Tests
+
+Run the automated tests with:
+
+```bash
+python -m pytest
+```
+
 ## Learning Goals
 
 This project is part of my learning journey in Python, data processing, data quality, and data engineering fundamentals.
 
 ## Future Improvements
 
-* Add automated tests
+* Expand automated test coverage
 * Improve data validation
 * Generate reports in additional formats
 * Integrate a relational database
