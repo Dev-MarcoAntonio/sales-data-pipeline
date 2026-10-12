@@ -1,3 +1,5 @@
+import logging
+
 def clean_sales_data(df):
     initial_rows = len(df)
 
@@ -5,6 +7,6 @@ def clean_sales_data(df):
 
     removed_rows = initial_rows - len(df)
 
-    print('Rows removed due to missing product:',removed_rows)
+    logging.info('Rows removed due to missing product: %s',removed_rows)
 
     return df

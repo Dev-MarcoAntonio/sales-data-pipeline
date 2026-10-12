@@ -1,4 +1,5 @@
 import pandas as pd
+import logging
 
 def validate_sales_data(df):
     try:
@@ -14,5 +15,7 @@ def validate_sales_data(df):
 
     if (df['unit_price'] < 0 ).any():
         raise ValueError('Unit price cannot be negative')
+
+    logging.info('Sales data validation completed successfully')
     
     return df
