@@ -6,6 +6,8 @@ from main import validate_sales_data,clean_sales_data,calculate_sales_data,gener
 
 def test_quantity_must_be_greater_than_zero():
     df = pd.DataFrame({
+        'date': ['2026-10-01'],
+        'product': ['Mouse'],
         'quantity': [-2],
         'unit_price': [10.0]
     })
@@ -15,6 +17,8 @@ def test_quantity_must_be_greater_than_zero():
 
 def test_unit_price_cannot_be_negative():
     df = pd.DataFrame({
+        'date': ['2026-10-01'],
+        'product': ['Mouse'],
         'quantity': [2],
         'unit_price': [-10.0]
     })
@@ -24,6 +28,8 @@ def test_unit_price_cannot_be_negative():
 
 def test_quantity_must_be_numeric():
     df = pd.DataFrame({
+        'date': ['2026-10-01'],
+        'product': ['Mouse'],
         'quantity': ['abc'],
         'unit_price': [10.0]
     })
@@ -33,6 +39,8 @@ def test_quantity_must_be_numeric():
 
 def test_quantity_cannot_be_missing():
     df = pd.DataFrame({
+        'date': ['2026-10-01'],
+        'product': ['Mouse'],
         'quantity': [None],
         'unit_price': [10.0]
     })
@@ -84,3 +92,47 @@ def test_load_sales_data_file_not_found():
    with patch('src.data_loader.pd.read_csv', side_effect=FileNotFoundError):
         with pytest.raises(FileNotFoundError):
             load_sales_data()
+
+def test_validate_missing_columns():
+    import pandas as pd
+    import pytest
+    from src.data_validator import validate_sales_data
+
+    df = pd.DataFrame({
+        'product': ['Mouse'],
+        'quantity': [2],
+    })
+
+    with pytest.raises(ValueError, match = 'Missing required columns'):
+        validate_sales_data(df)
+
+def test_validate_invalid_date_format():
+    df = pd.DataFrame({
+        'date': ['20-12-2026'],
+        'product': ['Mouse'],
+        'quantity': [2],
+        'unit_price': [20.0]
+    })
+    with pytest.raises(ValueError, match= 'Date must follow YYYY-MM-DD format'):
+        validate_sales_data(df)
+
+def test_validate_impossible_date():
+    df = pd.DataFrame({
+        'date': ['2026-12-38'],
+        'product': ['Mouse'],
+        'quantity': [2],
+        'unit_price': [20.0]
+    })
+    with pytest.raises(ValueError, match='Date contains invalid values'):
+        validate_sales_data(df)
+        
+def test_validate_missing_date():
+    df = pd.DataFrame({
+        'date': [None],
+        'product': ['Mouse'],
+        'quantity': [2],
+        'unit_price': [50.0]
+    })
+
+    with pytest.raises(ValueError, match='Date cannot be missing'):
+        validate_sales_data(df)
