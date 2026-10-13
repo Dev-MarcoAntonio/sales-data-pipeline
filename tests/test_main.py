@@ -34,7 +34,7 @@ def test_quantity_must_be_numeric():
         'unit_price': [10.0]
     })
 
-    with pytest.raises(ValueError, match='Quantity and unit must be numeric'):
+    with pytest.raises(ValueError, match='Invalid quantity at CSV rows'):
         validate_sales_data(df)
 
 def test_quantity_cannot_be_missing():
@@ -45,7 +45,7 @@ def test_quantity_cannot_be_missing():
         'unit_price': [10.0]
     })
 
-    with pytest.raises(ValueError, match='Quantity and unit price cannot be missing'):
+    with pytest.raises(ValueError, match='Quantity cannot be missing'):
         validate_sales_data(df)
 
 def test_clean_sales_data_removes_missing_products():
@@ -113,7 +113,7 @@ def test_validate_invalid_date_format():
         'quantity': [2],
         'unit_price': [20.0]
     })
-    with pytest.raises(ValueError, match= 'Date must follow YYYY-MM-DD format'):
+    with pytest.raises(ValueError, match= 'Invalid date format at CSV rows'):
         validate_sales_data(df)
 
 def test_validate_impossible_date():
@@ -123,9 +123,9 @@ def test_validate_impossible_date():
         'quantity': [2],
         'unit_price': [20.0]
     })
-    with pytest.raises(ValueError, match='Date contains invalid values'):
+    with pytest.raises(ValueError, match='Invalid date values at CSV rows'):
         validate_sales_data(df)
-        
+
 def test_validate_missing_date():
     df = pd.DataFrame({
         'date': [None],
@@ -136,3 +136,67 @@ def test_validate_missing_date():
 
     with pytest.raises(ValueError, match='Date cannot be missing'):
         validate_sales_data(df)
+
+def test_validate_invalid_date_reports_csv_row_and_value():
+    df = pd.DataFrame({
+        'date': ['2026-10-01','20-12-2026','2026-10-03'],
+        'product': ['Keyboard','Mouse','Monitor'],
+        'quantity': [2,3,1],
+        'unit_price': [120.0,50.0,850.0]
+    })
+
+    with pytest.raises(ValueError) as error:
+        validate_sales_data(df)
+
+    assert 'CSV rows [3]' in str(error.value)
+    assert '20-12-2026' in str(error.value)
+
+def test_validate_impossible_date_reports_csv_row_and_value():
+    df = pd.DataFrame({
+        'date': ['2026-10-01', '2026-15-40', '2026-10-03'],
+        'product': ['Keyboard', 'Mouse', 'Monitor'],
+        'quantity': [2, 3, 1],
+        'unit_price': [120.0, 50.0, 850.0]
+    })
+
+    with pytest.raises(ValueError) as error:
+        validate_sales_data(df)
+
+    assert 'CSV rows [3]' in str(error.value)
+    assert "['2026-15-40']" in str(error.value)
+
+def test_unit_price_must_be_numeric_reports_csv_row_and_value():
+    df = pd.DataFrame({
+        'date': ['2026-10-01'],
+        'product': ['Mouse'],
+        'quantity': [2],
+        'unit_price': ['abc']
+    })
+
+    with pytest.raises(ValueError) as error:
+        validate_sales_data(df)
+
+    assert 'Invalid unit price at CSV rows [2]' in str(error.value)
+    assert "['abc']" in str(error.value)
+
+def test_unit_price_cannot_be_missing():
+    df = pd.DataFrame({
+        'date': ['2026-10-01'],
+        'product': ['Mouse'],
+        'quantity': [2],
+        'unit_price': [None]
+    })
+    with pytest.raises(ValueError, match= 'Unit price cannot be missing'):
+        validate_sales_data(df)
+
+def test_clean_sales_data_removes_empty_product():
+    df = pd.DataFrame({
+        'product': ['Keyboard','    ','','Mouse'],
+        'quantity': [2,1,3,2],
+        'unit_price': [120.0, 50.0, 30.0, 50.0]
+    })
+
+    cleaned_df = clean_sales_data(df)
+
+    assert len(cleaned_df) == 2
+    assert cleaned_df['product'].tolist() == ['Keyboard','Mouse']
