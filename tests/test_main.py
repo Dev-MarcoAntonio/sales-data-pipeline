@@ -203,7 +203,7 @@ def test_clean_sales_data_removes_empty_product():
     assert cleaned_df['product'].tolist() == ['Keyboard','Mouse']
 
 
-def test_detect_duplicate_sales():
+def test_pandas_identifies_duplicate_sales():
     df = pd.DataFrame({
         'date': ['2026-10-01', '2026-10-01', '2026-10-01'],
         'product': ['Mouse', 'Keyboard', 'Mouse'],
