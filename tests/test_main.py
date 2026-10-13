@@ -1,7 +1,15 @@
 import pandas as pd
 import pytest
 
-from main import validate_sales_data,clean_sales_data,calculate_sales_data,generate_sales_report
+from main import (
+    validate_sales_data,
+    clean_sales_data,
+    calculate_sales_data,
+    generate_sales_report,
+    load_sales_data,
+    detect_duplicate_sales
+)   
+from unittest.mock import patch
 
 
 def test_quantity_must_be_greater_than_zero():
@@ -83,19 +91,12 @@ def test_generate_sales_report():
     assert sales_by_product['Keyboard'] == 360.0
     assert sales_by_product['Mouse'] == 150.0
 
-from unittest.mock import patch
-
-from main import load_sales_data
-
-
 def test_load_sales_data_file_not_found():
    with patch('src.data_loader.pd.read_csv', side_effect=FileNotFoundError):
         with pytest.raises(FileNotFoundError):
             load_sales_data()
 
 def test_validate_missing_columns():
-    import pandas as pd
-    import pytest
     from src.data_validator import validate_sales_data
 
     df = pd.DataFrame({
@@ -200,3 +201,46 @@ def test_clean_sales_data_removes_empty_product():
 
     assert len(cleaned_df) == 2
     assert cleaned_df['product'].tolist() == ['Keyboard','Mouse']
+
+
+def test_detect_duplicate_sales():
+    df = pd.DataFrame({
+        'date': ['2026-10-01', '2026-10-01', '2026-10-01'],
+        'product': ['Mouse', 'Keyboard', 'Mouse'],
+        'quantity': [2, 1, 2],
+        'unit_price': [50.0, 120.0, 50.0]
+    })
+
+    duplicates = df.duplicated()
+
+    assert duplicates.sum() == 1
+    assert duplicates.tolist() == [False, False, True]
+
+def test_detect_duplicate_sales():
+    df = pd.DataFrame({
+        'date': ['2026-10-01', '2026-10-01', '2026-10-01'],
+        'product': ['Mouse', 'Keyboard', 'Mouse'],
+        'quantity': [2, 1, 2],
+        'unit_price': [50.0, 120.0, 50.0]       
+    })
+
+    original_df = df.copy()
+
+    duplicates = detect_duplicate_sales(df)
+
+    assert len(duplicates) == 1
+    assert duplicates.iloc[0]['product'] == 'Mouse'
+    pd.testing.assert_frame_equal(df,original_df)
+
+def test_detect_duplicate_sales_logs_csv_row(caplog):
+    df = pd.DataFrame({
+        'date': ['2026-10-01', '2026-10-01', '2026-10-01'],
+        'product': ['Mouse', 'Keyboard', 'Mouse'],
+        'quantity': [2, 1, 2],
+        'unit_price': [50.0, 120.0, 50.0]
+    })
+
+    with caplog.at_level('INFO'):
+        detect_duplicate_sales(df)
+
+    assert 'CSV rows: [4]' in caplog.text

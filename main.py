@@ -2,7 +2,7 @@ import logging
 
 from src.data_loader import load_sales_data
 from src.data_validator import validate_sales_data
-from src.data_cleaner import clean_sales_data
+from src.data_cleaner import clean_sales_data,detect_duplicate_sales
 from src.sales_report import calculate_sales_data, generate_sales_report
 
 logging.basicConfig(
@@ -20,6 +20,19 @@ def main():
         logging.info('Sales data loaded successfully')
         df = clean_sales_data(df)
         df = validate_sales_data(df)
+
+        duplicates = detect_duplicate_sales(df)
+
+        if not duplicates.empty:
+            logging.warning(
+                'Potential duplicate sales found: \n%s',
+                duplicates
+            )
+            print('Potential duplicate sales found:')
+            print(duplicates)
+        else:
+            logging.info('No duplicate sales found')
+
         df = calculate_sales_data(df)
 
         missing_values = df.isnull().sum()
