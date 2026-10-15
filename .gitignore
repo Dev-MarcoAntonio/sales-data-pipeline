@@ -21,3 +21,8 @@ Thumbs.db
 .coverage
 htmlcov/
 pipeline.log
+
+# Build and distribution
+build/
+dist/
+*.egg-info/

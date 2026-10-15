@@ -1,29 +1,31 @@
 # Sales Data Pipeline
 
-A beginner-friendly data pipeline built with Python and Pandas to process sales data from a CSV file.
+A beginner-friendly data pipeline built with Python and Pandas to process, validate, clean, and analyze sales data from a CSV file.
 
 ## Project Overview
 
-This project reads raw sales data, validates and cleans the records, calculates sales totals, and generates summary reports.
+This project implements a simple ETL (Extract, Transform, Load) workflow. It reads raw sales data, validates data quality, removes records with missing or empty product names, detects potential duplicate sales, calculates sales totals, and generates revenue reports.
 
 ## Features
 
-* Read sales data from a CSV file
-* Detect missing values
-* Remove records with missing product names
-* Validate quantities and unit prices
-* Calculate the total price of each sale
-* Calculate total revenue
-* Generate revenue summaries by product
-* Export processed data to a CSV file
-* Run automated tests with pytest
+- Load sales data from a CSV file
+- Validate required columns and data types
+- Validate dates, quantities, and unit prices
+- Remove records with missing or empty product names
+- Detect and log potential duplicate sales
+- Calculate the total price of each sale
+- Calculate total revenue
+- Generate revenue summaries by product
+- Export processed data to a CSV file
+- Log pipeline execution and errors
+- Run automated tests with pytest
 
 ## Technologies
 
-* Python
-* Pandas
-* pytest
-* Git and GitHub
+- Python
+- Pandas
+- pytest
+- Git and GitHub
 
 ## Project Structure
 
@@ -66,44 +68,59 @@ sales-data-pipeline/
    python -m venv .venv
    ```
 
-4. Activate the virtual environment on Windows:
+4. Activate the virtual environment.
+
+   On Windows PowerShell:
 
    ```powershell
    .venv\Scripts\Activate.ps1
    ```
 
+   On Linux or macOS:
+
+   ```bash
+   source .venv/bin/activate
+   ```
+
 5. Install the dependencies:
 
    ```bash
-   pip install -r requirements.txt
+   python -m pip install -r requirements.txt
    ```
 
 ## Usage
 
-Run the pipeline:
+Run the pipeline from the project root directory:
 
 ```bash
 python main.py
 ```
 
-The processed sales data will be saved to `data/processed_sales.csv`.
+The pipeline processes the raw sales data and saves the output to:
+
+```text
+data/processed_sales.csv
+```
+
+Execution details and errors are recorded in the pipeline log.
 
 ## Running Tests
 
-Run the automated tests with:
+Run the automated test suite:
 
 ```bash
-python -m pytest
+python -m pytest -v
 ```
+
+The tests cover data validation, cleaning, sales calculations, reporting, and duplicate detection.
 
 ## Learning Goals
 
-This project is part of my learning journey in Python, data processing, data quality, and data engineering fundamentals.
+This project is part of my learning journey in Python, data processing, data quality, automated testing, and data engineering fundamentals.
 
 ## Future Improvements
 
-* Expand automated test coverage
-* Improve data validation
-* Generate reports in additional formats
-* Integrate a relational database
-* Automate pipeline execution
+- Generate reports in additional formats
+- Integrate a relational database
+- Automate pipeline execution
+- Improve duplicate detection using a unique sale identifier
